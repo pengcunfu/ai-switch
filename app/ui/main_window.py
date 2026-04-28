@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QTabWidget, QTextEdit, QTableWidget, QTableWidgetItem,
@@ -13,7 +14,7 @@ from PySide6.QtWidgets import (
     QMessageBox, QLabel, QHeaderView, QAbstractItemView,
     QGroupBox, QSplitter, QCheckBox
 )
-from PySide6.QtCore import QSize
+from PySide6.QtCore import QSize, QRect
 
 from .widgets.json_highlighter import JsonHighlighter
 
@@ -31,7 +32,14 @@ class ClaudeConfigGUI(QMainWindow):
     def init_ui(self):
         """初始化UI"""
         self.setWindowTitle("Claude Configuration Manager")
-        self.setGeometry(100, 100, 1200, 750)
+
+        # 设置窗口图标
+        icon_path = Path(__file__).parent.parent.parent / "resources" / "icon.png"
+        self.setWindowIcon(QIcon(str(icon_path)))
+
+        # 设置窗口大小并居中
+        self.resize(1200, 750)
+        self.center_window()
 
         # Create central widget
         central_widget = QWidget()
@@ -61,6 +69,14 @@ class ClaudeConfigGUI(QMainWindow):
 
         # Status bar
         self.statusBar().showMessage("就绪")
+
+    def center_window(self):
+        """将窗口居中显示"""
+        screen = self.screen().availableGeometry()
+        window = self.frameGeometry()
+        center_point = screen.center()
+        window.moveCenter(center_point)
+        self.move(window.topLeft())
 
     def create_general_settings_tab(self):
         """创建通用设置标签页"""

@@ -3,7 +3,9 @@ Claude Configuration Manager
 Claude 配置管理器主程序
 """
 import sys
+from pathlib import Path
 from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QIcon
 from app.ui.main_window import ClaudeConfigGUI
 
 
@@ -11,6 +13,10 @@ def main():
     """主函数"""
     # 创建应用
     app = QApplication(sys.argv)
+
+    # 设置应用图标
+    icon_path = Path(__file__).parent / "resources" / "icon.png"
+    app.setWindowIcon(QIcon(str(icon_path)))
 
     # 设置 Windows Vista 风格
     app.setStyle("WindowsVista")
