@@ -59,22 +59,13 @@ class ClaudeConfigGUI(QMainWindow):
         self.tab_widget = QTabWidget()
         main_layout.addWidget(self.tab_widget)
 
-        # Create tabs
-        self.create_general_settings_tab()
-        self.create_mcp_servers_tab()
-        self.create_projects_tab()
-        self.create_user_info_tab()
-        self.create_experimental_features_tab()
-        self.create_skills_tab()
-        self.create_model_config_tab()
-        self.create_permissions_tab()
-        self.create_statistics_tab()
-        self.create_theme_tab()
-        self.create_hooks_tab()
-        self.create_memory_tab()
-        self.create_uiux_tab()
-        self.create_developer_tools_tab()
-        self.create_integration_tab()
+        # Create categorized tabs
+        self.create_statistics_tab()  # 第一个标签页：独立的统计信息
+        self.create_basic_category_tab()
+        self.create_model_permissions_category_tab()
+        self.create_features_category_tab()
+        self.create_appearance_category_tab()
+        self.create_integration_category_tab()
         self.create_raw_config_tab()
 
         # Create menu bar
@@ -91,110 +82,47 @@ class ClaudeConfigGUI(QMainWindow):
         window.moveCenter(center_point)
         self.move(window.topLeft())
 
-    def create_general_settings_tab(self):
-        """创建通用设置标签页"""
-        from .tabs.general_settings_tab import GeneralSettingsTab
-        tab = GeneralSettingsTab(self)
-        self.general_settings_tab = tab
-        self.tab_widget.addTab(tab, "通用设置")
-
-    def create_mcp_servers_tab(self):
-        """创建 MCP 服务器标签页"""
-        from .tabs.mcp_servers_tab import MCPServersTab
-        tab = MCPServersTab(self)
-        self.mcp_servers_tab = tab
-        self.tab_widget.addTab(tab, "MCP 服务器")
-
-    def create_projects_tab(self):
-        """创建项目列表标签页"""
-        from .tabs.projects_tab import ProjectsTab
-        tab = ProjectsTab(self)
-        self.projects_tab = tab
-        self.tab_widget.addTab(tab, "项目列表")
-
-    def create_user_info_tab(self):
-        """创建用户信息标签页"""
-        from .tabs.user_info_tab import UserInfoTab
-        tab = UserInfoTab(self)
-        self.user_info_tab = tab
-        self.tab_widget.addTab(tab, "用户信息")
-
-    def create_experimental_features_tab(self):
-        """创建实验性功能标签页"""
-        from .tabs.experimental_features_tab import ExperimentalFeaturesTab
-        tab = ExperimentalFeaturesTab(self)
-        self.experimental_features_tab = tab
-        self.tab_widget.addTab(tab, "实验性功能")
-
-    def create_skills_tab(self):
-        """创建 Skills 标签页"""
-        from .tabs.skills_tab import SkillsTab
-        tab = SkillsTab(self)
-        self.skills_tab = tab
-        self.tab_widget.addTab(tab, "Skills")
-
-    def create_model_config_tab(self):
-        """创建 Model 配置标签页"""
-        from .tabs.model_config_tab import ModelConfigTab
-        tab = ModelConfigTab(self)
-        self.model_config_tab = tab
-        self.tab_widget.addTab(tab, "Model 配置")
-
-    def create_permissions_tab(self):
-        """创建 Permissions 管理标签页"""
-        from .tabs.permissions_tab import PermissionsTab
-        tab = PermissionsTab(self)
-        self.permissions_tab = tab
-        self.tab_widget.addTab(tab, "权限管理")
-
     def create_statistics_tab(self):
-        """创建 Statistics 仪表板标签页"""
+        """创建统计信息标签页 (第一个标签页)"""
         from .tabs.statistics_tab import StatisticsTab
         tab = StatisticsTab(self)
         self.statistics_tab = tab
-        self.tab_widget.addTab(tab, "统计信息")
+        self.tab_widget.addTab(tab, "📊 统计信息")
 
-    def create_theme_tab(self):
-        """创建 Theme/外观配置标签页"""
-        from .tabs.theme_tab import ThemeTab
-        tab = ThemeTab(self)
-        self.theme_tab = tab
-        self.tab_widget.addTab(tab, "主题外观")
+    def create_basic_category_tab(self):
+        """创建基础配置分类标签页"""
+        from .tabs.category_basic_tab import BasicCategoryTab
+        tab = BasicCategoryTab(self)
+        self.basic_category_tab = tab
+        self.tab_widget.addTab(tab, "⚙️ 基础配置")
 
-    def create_hooks_tab(self):
-        """创建 Hooks 配置标签页"""
-        from .tabs.hooks_tab import HooksTab
-        tab = HooksTab(self)
-        self.hooks_tab = tab
-        self.tab_widget.addTab(tab, "Hooks 配置")
+    def create_model_permissions_category_tab(self):
+        """创建模型与权限分类标签页"""
+        from .tabs.category_model_permissions_tab import ModelPermissionsCategoryTab
+        tab = ModelPermissionsCategoryTab(self)
+        self.model_permissions_category_tab = tab
+        self.tab_widget.addTab(tab, "🤖 模型与权限")
 
-    def create_memory_tab(self):
-        """创建 Memory 系统配置标签页"""
-        from .tabs.memory_tab import MemoryTab
-        tab = MemoryTab(self)
-        self.memory_tab = tab
-        self.tab_widget.addTab(tab, "Memory 系统")
+    def create_features_category_tab(self):
+        """创建功能配置分类标签页"""
+        from .tabs.category_features_tab import FeaturesCategoryTab
+        tab = FeaturesCategoryTab(self)
+        self.features_category_tab = tab
+        self.tab_widget.addTab(tab, "⚙️ 功能配置")
 
-    def create_uiux_tab(self):
-        """创建 UI/UX 配置标签页"""
-        from .tabs.uiux_tab import UIUXTab
-        tab = UIUXTab(self)
-        self.uiux_tab = tab
-        self.tab_widget.addTab(tab, "UI/UX 设置")
+    def create_appearance_category_tab(self):
+        """创建外观与界面分类标签页"""
+        from .tabs.category_appearance_tab import AppearanceCategoryTab
+        tab = AppearanceCategoryTab(self)
+        self.appearance_category_tab = tab
+        self.tab_widget.addTab(tab, "🎨 外观与界面")
 
-    def create_developer_tools_tab(self):
-        """创建 Developer Tools 标签页"""
-        from .tabs.developer_tools_tab import DeveloperToolsTab
-        tab = DeveloperToolsTab(self)
-        self.developer_tools_tab = tab
-        self.tab_widget.addTab(tab, "开发者工具")
-
-    def create_integration_tab(self):
-        """创建 Integration Settings 标签页"""
-        from .tabs.integration_tab import IntegrationTab
-        tab = IntegrationTab(self)
-        self.integration_tab = tab
-        self.tab_widget.addTab(tab, "集成设置")
+    def create_integration_category_tab(self):
+        """创建集成与工具分类标签页"""
+        from .tabs.category_integration_tab import IntegrationCategoryTab
+        tab = IntegrationCategoryTab(self)
+        self.integration_category_tab = tab
+        self.tab_widget.addTab(tab, "🔗 集成与工具")
 
     def create_raw_config_tab(self):
         """创建原始 JSON 配置标签页"""
@@ -212,23 +140,14 @@ class ClaudeConfigGUI(QMainWindow):
             else:
                 self.config_data = {}
 
-            # 更新所有视图
-            self.general_settings_tab.load_data(self.config_data)
-            self.raw_config_tab.load_data(self.config_data)
-            self.mcp_servers_tab.load_data(self.config_data)
-            self.projects_tab.load_data(self.config_data)
-            self.user_info_tab.load_data(self.config_data)
-            self.experimental_features_tab.load_data(self.config_data)
-            self.skills_tab.load_data(self.config_data)
-            self.model_config_tab.load_data(self.config_data)
-            self.permissions_tab.load_data(self.config_data)
+            # 更新所有分类标签页
             self.statistics_tab.load_data(self.config_data)
-            self.theme_tab.load_data(self.config_data)
-            self.hooks_tab.load_data(self.config_data)
-            self.memory_tab.load_data(self.config_data)
-            self.uiux_tab.load_data(self.config_data)
-            self.developer_tools_tab.load_data(self.config_data)
-            self.integration_tab.load_data(self.config_data)
+            self.basic_category_tab.load_data(self.config_data)
+            self.model_permissions_category_tab.load_data(self.config_data)
+            self.features_category_tab.load_data(self.config_data)
+            self.appearance_category_tab.load_data(self.config_data)
+            self.integration_category_tab.load_data(self.config_data)
+            self.raw_config_tab.load_data(self.config_data)
 
             self.statusBar().showMessage(f"配置已加载: {self.config_path}")
         except Exception as e:
@@ -261,22 +180,13 @@ class ClaudeConfigGUI(QMainWindow):
 
     def refresh_all_views(self):
         """刷新所有视图"""
-        self.general_settings_tab.load_data(self.config_data)
-        self.raw_config_tab.load_data(self.config_data)
-        self.mcp_servers_tab.load_data(self.config_data)
-        self.projects_tab.load_data(self.config_data)
-        self.user_info_tab.load_data(self.config_data)
-        self.experimental_features_tab.load_data(self.config_data)
-        self.skills_tab.load_data(self.config_data)
-        self.model_config_tab.load_data(self.config_data)
-        self.permissions_tab.load_data(self.config_data)
         self.statistics_tab.load_data(self.config_data)
-        self.theme_tab.load_data(self.config_data)
-        self.hooks_tab.load_data(self.config_data)
-        self.memory_tab.load_data(self.config_data)
-        self.uiux_tab.load_data(self.config_data)
-        self.developer_tools_tab.load_data(self.config_data)
-        self.integration_tab.load_data(self.config_data)
+        self.basic_category_tab.load_data(self.config_data)
+        self.model_permissions_category_tab.load_data(self.config_data)
+        self.features_category_tab.load_data(self.config_data)
+        self.appearance_category_tab.load_data(self.config_data)
+        self.integration_category_tab.load_data(self.config_data)
+        self.raw_config_tab.load_data(self.config_data)
 
     def create_menu_bar(self):
         """创建菜单栏"""
