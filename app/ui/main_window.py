@@ -3,6 +3,8 @@ Claude 配置管理器主窗口
 """
 import json
 import shutil
+import subprocess
+import platform
 from pathlib import Path
 from datetime import datetime
 
@@ -192,12 +194,103 @@ class ClaudeConfigGUI(QMainWindow):
         """创建菜单栏"""
         menubar = self.menuBar()
 
+        # 文件菜单
+        file_menu = menubar.addMenu("文件(&F)")
+
+        # 打开配置文件位置
+        open_config_action = file_menu.addAction("打开配置文件位置(&C)")
+        open_config_action.triggered.connect(self.open_config_location)
+
+        # 打开 Skills 文件夹
+        open_skills_action = file_menu.addAction("打开 Skills 文件夹(&S)")
+        open_skills_action.triggered.connect(self.open_skills_folder)
+
+        # 打开 .claude 文件夹
+        open_claude_action = file_menu.addAction("打开 .claude 文件夹(&L)")
+        open_claude_action.triggered.connect(self.open_claude_folder)
+
+        file_menu.addSeparator()
+
+        # 刷新配置
+        refresh_action = file_menu.addAction("刷新配置(&R)")
+        refresh_action.triggered.connect(self.refresh_config)
+
         # 帮助菜单
         help_menu = menubar.addMenu("帮助(&H)")
 
         # 关于选项
         about_action = help_menu.addAction("关于(&A)...")
         about_action.triggered.connect(self.show_about_dialog)
+
+    def open_config_location(self):
+        """打开配置文件位置"""
+        try:
+            config_file = self.config_path
+            if config_file.exists():
+                self.open_file_location(config_file)
+                self.statusBar().showMessage(f"已打开: {config_file}")
+            else:
+                QMessageBox.warning(self, "警告", f"配置文件不存在:\n{config_file}")
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"打开配置文件位置失败:\n{str(e)}")
+
+    def open_skills_folder(self):
+        """打开 Skills 文件夹"""
+        try:
+            # 全局 Skills 文件夹
+            global_skills = Path.home() / ".claude" / "skills"
+            if global_skills.exists():
+                self.open_file_location(global_skills)
+                self.statusBar().showMessage(f"已打开: {global_skills}")
+            else:
+                QMessageBox.warning(self, "警告", f"Skills 文件夹不存在:\n{global_skills}")
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"打开 Skills 文件夹失败:\n{str(e)}")
+
+    def open_claude_folder(self):
+        """打开 .claude 文件夹"""
+        try:
+            claude_folder = Path.home() / ".claude"
+            if claude_folder.exists():
+                self.open_file_location(claude_folder)
+                self.statusBar().showMessage(f"已打开: {claude_folder}")
+            else:
+                QMessageBox.warning(self, "警告", f".claude 文件夹不存在:\n{claude_folder}")
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"打开 .claude 文件夹失败:\n{str(e)}")
+
+    def open_file_location(self, path):
+        """打开文件或文件夹位置"""
+        try:
+            path = Path(path)
+            system = platform.system()
+
+            if system == "Windows":
+                # Windows: 使用 explorer
+                if path.is_file():
+                    subprocess.run(['explorer', '/select,', str(path)])
+                else:
+                    subprocess.run(['explorer', str(path)])
+            elif system == "Darwin":  # macOS
+                if path.is_file():
+                    subprocess.run(['open', '-R', str(path)])
+                else:
+                    subprocess.run(['open', str(path)])
+            else:  # Linux
+                if path.is_file():
+                    subprocess.run(['xdg-open', str(path.parent)])
+                else:
+                    subprocess.run(['xdg-open', str(path)])
+        except Exception as e:
+            raise Exception(f"无法打开位置: {str(e)}")
+
+    def refresh_config(self):
+        """刷新配置"""
+        try:
+            self.load_config()
+            QMessageBox.information(self, "成功", "配置已刷新!")
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"刷新配置失败:\n{str(e)}")
 
     def show_about_dialog(self):
         """显示关于对话框"""
