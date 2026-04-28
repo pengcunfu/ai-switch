@@ -66,6 +66,15 @@ class ClaudeConfigGUI(QMainWindow):
         self.create_user_info_tab()
         self.create_experimental_features_tab()
         self.create_skills_tab()
+        self.create_model_config_tab()
+        self.create_permissions_tab()
+        self.create_statistics_tab()
+        self.create_theme_tab()
+        self.create_hooks_tab()
+        self.create_memory_tab()
+        self.create_uiux_tab()
+        self.create_developer_tools_tab()
+        self.create_integration_tab()
         self.create_raw_config_tab()
 
         # Create menu bar
@@ -124,6 +133,69 @@ class ClaudeConfigGUI(QMainWindow):
         self.skills_tab = tab
         self.tab_widget.addTab(tab, "Skills")
 
+    def create_model_config_tab(self):
+        """创建 Model 配置标签页"""
+        from .tabs.model_config_tab import ModelConfigTab
+        tab = ModelConfigTab(self)
+        self.model_config_tab = tab
+        self.tab_widget.addTab(tab, "Model 配置")
+
+    def create_permissions_tab(self):
+        """创建 Permissions 管理标签页"""
+        from .tabs.permissions_tab import PermissionsTab
+        tab = PermissionsTab(self)
+        self.permissions_tab = tab
+        self.tab_widget.addTab(tab, "权限管理")
+
+    def create_statistics_tab(self):
+        """创建 Statistics 仪表板标签页"""
+        from .tabs.statistics_tab import StatisticsTab
+        tab = StatisticsTab(self)
+        self.statistics_tab = tab
+        self.tab_widget.addTab(tab, "统计信息")
+
+    def create_theme_tab(self):
+        """创建 Theme/外观配置标签页"""
+        from .tabs.theme_tab import ThemeTab
+        tab = ThemeTab(self)
+        self.theme_tab = tab
+        self.tab_widget.addTab(tab, "主题外观")
+
+    def create_hooks_tab(self):
+        """创建 Hooks 配置标签页"""
+        from .tabs.hooks_tab import HooksTab
+        tab = HooksTab(self)
+        self.hooks_tab = tab
+        self.tab_widget.addTab(tab, "Hooks 配置")
+
+    def create_memory_tab(self):
+        """创建 Memory 系统配置标签页"""
+        from .tabs.memory_tab import MemoryTab
+        tab = MemoryTab(self)
+        self.memory_tab = tab
+        self.tab_widget.addTab(tab, "Memory 系统")
+
+    def create_uiux_tab(self):
+        """创建 UI/UX 配置标签页"""
+        from .tabs.uiux_tab import UIUXTab
+        tab = UIUXTab(self)
+        self.uiux_tab = tab
+        self.tab_widget.addTab(tab, "UI/UX 设置")
+
+    def create_developer_tools_tab(self):
+        """创建 Developer Tools 标签页"""
+        from .tabs.developer_tools_tab import DeveloperToolsTab
+        tab = DeveloperToolsTab(self)
+        self.developer_tools_tab = tab
+        self.tab_widget.addTab(tab, "开发者工具")
+
+    def create_integration_tab(self):
+        """创建 Integration Settings 标签页"""
+        from .tabs.integration_tab import IntegrationTab
+        tab = IntegrationTab(self)
+        self.integration_tab = tab
+        self.tab_widget.addTab(tab, "集成设置")
+
     def create_raw_config_tab(self):
         """创建原始 JSON 配置标签页"""
         from .tabs.raw_config_tab import RawConfigTab
@@ -148,6 +220,15 @@ class ClaudeConfigGUI(QMainWindow):
             self.user_info_tab.load_data(self.config_data)
             self.experimental_features_tab.load_data(self.config_data)
             self.skills_tab.load_data(self.config_data)
+            self.model_config_tab.load_data(self.config_data)
+            self.permissions_tab.load_data(self.config_data)
+            self.statistics_tab.load_data(self.config_data)
+            self.theme_tab.load_data(self.config_data)
+            self.hooks_tab.load_data(self.config_data)
+            self.memory_tab.load_data(self.config_data)
+            self.uiux_tab.load_data(self.config_data)
+            self.developer_tools_tab.load_data(self.config_data)
+            self.integration_tab.load_data(self.config_data)
 
             self.statusBar().showMessage(f"配置已加载: {self.config_path}")
         except Exception as e:
@@ -187,6 +268,15 @@ class ClaudeConfigGUI(QMainWindow):
         self.user_info_tab.load_data(self.config_data)
         self.experimental_features_tab.load_data(self.config_data)
         self.skills_tab.load_data(self.config_data)
+        self.model_config_tab.load_data(self.config_data)
+        self.permissions_tab.load_data(self.config_data)
+        self.statistics_tab.load_data(self.config_data)
+        self.theme_tab.load_data(self.config_data)
+        self.hooks_tab.load_data(self.config_data)
+        self.memory_tab.load_data(self.config_data)
+        self.uiux_tab.load_data(self.config_data)
+        self.developer_tools_tab.load_data(self.config_data)
+        self.integration_tab.load_data(self.config_data)
 
     def create_menu_bar(self):
         """创建菜单栏"""
