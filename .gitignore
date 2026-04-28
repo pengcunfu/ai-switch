@@ -34,3 +34,5 @@ Thumbs.db
 # Project specific
 main_old.py
 *.bak
+.claude/
+.vscode/

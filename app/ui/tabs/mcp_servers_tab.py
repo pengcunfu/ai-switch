@@ -75,13 +75,7 @@ class MCPServersTab(QWidget):
             if "mcpServers" not in config_data:
                 config_data["mcpServers"] = {}
 
-            config_data["mcpServers"][server_data["name"]] = {
-                "command": server_data["command"],
-                "args": server_data["args"]
-            }
-
-            if server_data["env_vars"]:
-                config_data["mcpServers"][server_data["name"]]["env"] = server_data["env_vars"]
+            config_data["mcpServers"][server_data["name"]] = server_data["config"]
 
             self.parent_window.set_config_data(config_data)
             self.parent_window.save_config_to_file()
@@ -116,13 +110,7 @@ class MCPServersTab(QWidget):
             if server_data["name"] != server_name:
                 del mcp_servers[server_name]
 
-            mcp_servers[server_data["name"]] = {
-                "command": server_data["command"],
-                "args": server_data["args"]
-            }
-
-            if server_data["env_vars"]:
-                mcp_servers[server_data["name"]]["env"] = server_data["env_vars"]
+            mcp_servers[server_data["name"]] = server_data["config"]
 
             self.parent_window.set_config_data(config_data)
             self.parent_window.save_config_to_file()

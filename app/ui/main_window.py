@@ -65,6 +65,7 @@ class ClaudeConfigGUI(QMainWindow):
         self.create_projects_tab()
         self.create_user_info_tab()
         self.create_experimental_features_tab()
+        self.create_skills_tab()
         self.create_raw_config_tab()
 
         # Status bar
@@ -113,6 +114,13 @@ class ClaudeConfigGUI(QMainWindow):
         self.experimental_features_tab = tab
         self.tab_widget.addTab(tab, "实验性功能")
 
+    def create_skills_tab(self):
+        """创建 Skills 标签页"""
+        from .tabs.skills_tab import SkillsTab
+        tab = SkillsTab(self)
+        self.skills_tab = tab
+        self.tab_widget.addTab(tab, "Skills")
+
     def create_raw_config_tab(self):
         """创建原始 JSON 配置标签页"""
         from .tabs.raw_config_tab import RawConfigTab
@@ -136,6 +144,7 @@ class ClaudeConfigGUI(QMainWindow):
             self.projects_tab.load_data(self.config_data)
             self.user_info_tab.load_data(self.config_data)
             self.experimental_features_tab.load_data(self.config_data)
+            self.skills_tab.load_data(self.config_data)
 
             self.statusBar().showMessage(f"配置已加载: {self.config_path}")
         except Exception as e:
@@ -174,3 +183,4 @@ class ClaudeConfigGUI(QMainWindow):
         self.projects_tab.load_data(self.config_data)
         self.user_info_tab.load_data(self.config_data)
         self.experimental_features_tab.load_data(self.config_data)
+        self.skills_tab.load_data(self.config_data)
