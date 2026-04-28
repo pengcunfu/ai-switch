@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QTabWidget, QTextEdit, QTableWidget, QTableWidgetItem,
     QPushButton, QDialog, QFormLayout, QLineEdit, QFileDialog,
     QMessageBox, QLabel, QHeaderView, QAbstractItemView,
-    QGroupBox, QSplitter, QCheckBox
+    QGroupBox, QSplitter, QCheckBox, QMenuBar, QMenu
 )
 from PySide6.QtCore import QSize, QRect
 
@@ -67,6 +67,9 @@ class ClaudeConfigGUI(QMainWindow):
         self.create_experimental_features_tab()
         self.create_skills_tab()
         self.create_raw_config_tab()
+
+        # Create menu bar
+        self.create_menu_bar()
 
         # Status bar
         self.statusBar().showMessage("就绪")
@@ -184,3 +187,20 @@ class ClaudeConfigGUI(QMainWindow):
         self.user_info_tab.load_data(self.config_data)
         self.experimental_features_tab.load_data(self.config_data)
         self.skills_tab.load_data(self.config_data)
+
+    def create_menu_bar(self):
+        """创建菜单栏"""
+        menubar = self.menuBar()
+
+        # 帮助菜单
+        help_menu = menubar.addMenu("帮助(&H)")
+
+        # 关于选项
+        about_action = help_menu.addAction("关于(&A)...")
+        about_action.triggered.connect(self.show_about_dialog)
+
+    def show_about_dialog(self):
+        """显示关于对话框"""
+        from .dialogs.about_dialog import AboutDialog
+        dialog = AboutDialog(self)
+        dialog.exec()
