@@ -68,7 +68,6 @@ class ClaudeConfigGUI(QMainWindow):
         self.create_features_category_tab()
         self.create_appearance_category_tab()
         self.create_integration_category_tab()
-        self.create_raw_config_tab()
 
         # Create menu bar
         self.create_menu_bar()
@@ -126,13 +125,6 @@ class ClaudeConfigGUI(QMainWindow):
         self.integration_category_tab = tab
         self.tab_widget.addTab(tab, "🔗 集成与工具")
 
-    def create_raw_config_tab(self):
-        """创建原始 JSON 配置标签页"""
-        from .tabs.raw_config_tab import RawConfigTab
-        tab = RawConfigTab(self)
-        self.raw_config_tab = tab
-        self.tab_widget.addTab(tab, "完整配置 (JSON)")
-
     def load_config(self):
         """加载配置文件"""
         try:
@@ -149,7 +141,6 @@ class ClaudeConfigGUI(QMainWindow):
             self.features_category_tab.load_data(self.config_data)
             self.appearance_category_tab.load_data(self.config_data)
             self.integration_category_tab.load_data(self.config_data)
-            self.raw_config_tab.load_data(self.config_data)
 
             self.statusBar().showMessage(f"配置已加载: {self.config_path}")
         except Exception as e:
@@ -188,7 +179,6 @@ class ClaudeConfigGUI(QMainWindow):
         self.features_category_tab.load_data(self.config_data)
         self.appearance_category_tab.load_data(self.config_data)
         self.integration_category_tab.load_data(self.config_data)
-        self.raw_config_tab.load_data(self.config_data)
 
     def create_menu_bar(self):
         """创建菜单栏"""
@@ -210,6 +200,10 @@ class ClaudeConfigGUI(QMainWindow):
         open_claude_action.triggered.connect(self.open_claude_folder)
 
         file_menu.addSeparator()
+
+        # 查看完整配置 JSON
+        view_config_action = file_menu.addAction("查看完整配置 JSON(&J)")
+        view_config_action.triggered.connect(self.show_config_json_dialog)
 
         # 刷新配置
         refresh_action = file_menu.addAction("刷新配置(&R)")
@@ -296,4 +290,10 @@ class ClaudeConfigGUI(QMainWindow):
         """显示关于对话框"""
         from .dialogs.about_dialog import AboutDialog
         dialog = AboutDialog(self)
+        dialog.exec()
+
+    def show_config_json_dialog(self):
+        """显示完整配置 JSON 对话框"""
+        from .dialogs.config_json_dialog import ConfigJsonDialog
+        dialog = ConfigJsonDialog(self, self.config_data)
         dialog.exec()

@@ -37,6 +37,13 @@ def build():
     # 执行打包
     try:
         run_command(pyinstaller_args)
+
+        # 清理 .spec 文件
+        spec_file = project_root / "ClaudeConfigManager.spec"
+        if spec_file.exists():
+            spec_file.unlink()
+            print(f"  已删除: {spec_file.name}")
+
         print("\n✓ 打包成功!")
         print(f"  可执行文件位置: {project_root / 'dist' / 'ClaudeConfigManager.exe'}")
     except subprocess.CalledProcessError as e:
