@@ -36,3 +36,4 @@ main_old.py
 *.bak
 .claude/
 .vscode/
+*.spec

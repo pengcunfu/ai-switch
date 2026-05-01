@@ -1,18 +1,26 @@
 """
-基础配置分类标签页 - 包含通用设置、用户信息
+基础配置分类标签页 - 包含通用设置
 """
-from .base_category_tab import BaseCategoryTab
+from PySide6.QtWidgets import QWidget, QVBoxLayout
+
+from .general_settings_tab import GeneralSettingsTab
 
 
-class BasicCategoryTab(BaseCategoryTab):
+class BasicCategoryTab(QWidget):
     """基础配置分类标签页"""
 
-    def create_sub_tabs(self):
-        """创建子标签页"""
-        # 通用设置
-        from .general_settings_tab import GeneralSettingsTab
-        self.add_sub_tab(GeneralSettingsTab, "通用设置", "general")
+    def __init__(self, parent_window):
+        super().__init__()
+        self.parent_window = parent_window
+        self.general_settings = None
+        self.init_ui()
 
-        # 用户信息
-        from .user_info_tab import UserInfoTab
-        self.add_sub_tab(UserInfoTab, "用户信息", "user")
+    def init_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        self.general_settings = GeneralSettingsTab(self.parent_window)
+        layout.addWidget(self.general_settings)
+
+    def load_data(self, config_data):
+        self.general_settings.load_data(config_data)
