@@ -3,6 +3,7 @@ Claude Configuration Manager 打包脚本
 使用 PyInstaller 将应用程序编译为可执行文件
 """
 import os
+import shutil
 import sys
 import subprocess
 from pathlib import Path
@@ -44,13 +45,19 @@ def build():
             spec_file.unlink()
             print(f"  已删除: {spec_file.name}")
 
-        print("\n✓ 打包成功!")
+        # 清理 PyInstaller 中间产物目录
+        build_dir = project_root / "build"
+        if build_dir.exists():
+            shutil.rmtree(build_dir)
+            print(f"  已删除: {build_dir}")
+
+        print("\n打包成功!")
         print(f"  可执行文件位置: {project_root / 'dist' / 'ClaudeConfigManager.exe'}")
     except subprocess.CalledProcessError as e:
-        print(f"\n✗ 打包失败: {e}")
+        print(f"\n打包失败: {e}")
         sys.exit(1)
     except FileNotFoundError:
-        print("\n✗ 未找到 PyInstaller，请先安装:")
+        print("\n未找到 PyInstaller，请先安装:")
         print("  pip install pyinstaller")
         sys.exit(1)
 

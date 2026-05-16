@@ -88,42 +88,42 @@ class ClaudeConfigGUI(QMainWindow):
         from .tabs.statistics_tab import StatisticsTab
         tab = StatisticsTab(self)
         self.statistics_tab = tab
-        self.tab_widget.addTab(tab, "📊 统计信息")
+        self.tab_widget.addTab(tab, "统计信息")
 
     def create_basic_category_tab(self):
         """创建基础配置分类标签页"""
         from .tabs.category_basic_tab import BasicCategoryTab
         tab = BasicCategoryTab(self)
         self.basic_category_tab = tab
-        self.tab_widget.addTab(tab, "⚙️ 基础配置")
+        self.tab_widget.addTab(tab, "基础配置")
 
     def create_model_permissions_category_tab(self):
         """创建模型与权限分类标签页"""
         from .tabs.category_model_permissions_tab import ModelPermissionsCategoryTab
         tab = ModelPermissionsCategoryTab(self)
         self.model_permissions_category_tab = tab
-        self.tab_widget.addTab(tab, "🤖 模型与权限")
+        self.tab_widget.addTab(tab, "模型与权限")
 
     def create_features_category_tab(self):
         """创建功能配置分类标签页"""
         from .tabs.category_features_tab import FeaturesCategoryTab
         tab = FeaturesCategoryTab(self)
         self.features_category_tab = tab
-        self.tab_widget.addTab(tab, "⚙️ 功能配置")
+        self.tab_widget.addTab(tab, "功能配置")
 
     def create_appearance_category_tab(self):
         """创建外观与界面分类标签页"""
         from .tabs.category_appearance_tab import AppearanceCategoryTab
         tab = AppearanceCategoryTab(self)
         self.appearance_category_tab = tab
-        self.tab_widget.addTab(tab, "🎨 外观与界面")
+        self.tab_widget.addTab(tab, "外观与界面")
 
     def create_integration_category_tab(self):
         """创建集成与工具分类标签页"""
         from .tabs.category_integration_tab import IntegrationCategoryTab
         tab = IntegrationCategoryTab(self)
         self.integration_category_tab = tab
-        self.tab_widget.addTab(tab, "🔗 集成与工具")
+        self.tab_widget.addTab(tab, "集成与工具")
 
     def load_config(self):
         """加载配置文件"""

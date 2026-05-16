@@ -192,11 +192,11 @@ class MCPServersTab(QWidget):
             result = self._test_mcp_server(server_config)
 
             if result["success"]:
-                status_item.setText("✓ 正常")
+                status_item.setText("正常")
                 status_item.setForeground(Qt.GlobalColor.green)
                 QMessageBox.information(self, "连接测试", f"MCP服务器 '{server_name}' 连接正常!\n\n{result.get('message', '连接成功')}")
             else:
-                status_item.setText("✗ 失败")
+                status_item.setText("失败")
                 status_item.setForeground(Qt.GlobalColor.red)
 
                 # 显示详细错误对话框
@@ -205,7 +205,7 @@ class MCPServersTab(QWidget):
                 error_dialog.exec()
 
         except Exception as e:
-            status_item.setText("✗ 错误")
+            status_item.setText("错误")
             status_item.setForeground(Qt.GlobalColor.red)
 
             # 显示详细错误对话框

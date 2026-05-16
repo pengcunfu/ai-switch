@@ -4,7 +4,7 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
     QPushButton, QMessageBox, QHeaderView, QAbstractItemView,
-    QSplitter, QLabel, QFileDialog
+    QSplitter, QLabel, QFileDialog, QGroupBox, QSizePolicy
 )
 from PySide6.QtCore import Qt
 
@@ -15,24 +15,28 @@ class ProjectsTab(QWidget):
     def __init__(self, parent_window):
         super().__init__()
         self.parent_window = parent_window
+        self._selected_repo = None
         self.init_ui()
 
     def init_ui(self):
         """初始化UI"""
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(8, 8, 8, 8)
+        layout.setSpacing(8)
 
-        # 信息标签
-        info_label = QLabel("GitHub 仓库路径配置:")
-        layout.addWidget(info_label)
+        hint = QLabel("将 GitHub 仓库映射到本地项目路径，便于 Claude 识别工作区。")
+        hint.setWordWrap(True)
+        hint.setStyleSheet("color: palette(mid);")
+        layout.addWidget(hint)
 
-        # 分割器
         splitter = QSplitter(Qt.Orientation.Horizontal)
+        splitter.setChildrenCollapsible(False)
 
         # 左侧: 仓库列表
-        left_widget = QWidget()
-        left_layout = QVBoxLayout(left_widget)
+        repo_group = QGroupBox("仓库列表")
+        repo_layout = QVBoxLayout(repo_group)
+        repo_layout.setSpacing(6)
 
-        # 仓库按钮
         repo_btn_layout = QHBoxLayout()
         add_repo_btn = QPushButton("添加仓库")
         delete_repo_btn = QPushButton("删除仓库")
@@ -41,46 +45,77 @@ class ProjectsTab(QWidget):
         repo_btn_layout.addWidget(add_repo_btn)
         repo_btn_layout.addWidget(delete_repo_btn)
         repo_btn_layout.addStretch()
-        left_layout.addLayout(repo_btn_layout)
+        repo_layout.addLayout(repo_btn_layout)
 
         self.repo_table = QTableWidget()
         self.repo_table.setColumnCount(2)
-        self.repo_table.setHorizontalHeaderLabels(["仓库", "路径数量"])
+        self.repo_table.setHorizontalHeaderLabels(["仓库", "路径数"])
+        self.repo_table.verticalHeader().setVisible(False)
         self.repo_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         self.repo_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
         self.repo_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.repo_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.repo_table.setAlternatingRowColors(True)
         self.repo_table.itemSelectionChanged.connect(self.on_repo_selected)
-        left_layout.addWidget(self.repo_table)
+        repo_layout.addWidget(self.repo_table)
 
-        splitter.addWidget(left_widget)
+        repo_group.setMinimumWidth(280)
+        splitter.addWidget(repo_group)
 
         # 右侧: 路径详情
-        right_widget = QWidget()
-        right_layout = QVBoxLayout(right_widget)
+        self.path_group = QGroupBox("本地路径")
+        path_layout = QVBoxLayout(self.path_group)
+        path_layout.setSpacing(6)
 
-        # 路径按钮
         path_btn_layout = QHBoxLayout()
-        add_path_btn = QPushButton("添加路径")
-        remove_path_btn = QPushButton("删除路径")
-        add_path_btn.clicked.connect(self.add_path)
-        remove_path_btn.clicked.connect(self.remove_path)
-        path_btn_layout.addWidget(add_path_btn)
-        path_btn_layout.addWidget(remove_path_btn)
+        self.add_path_btn = QPushButton("添加路径")
+        self.remove_path_btn = QPushButton("删除路径")
+        self.add_path_btn.clicked.connect(self.add_path)
+        self.remove_path_btn.clicked.connect(self.remove_path)
+        path_btn_layout.addWidget(self.add_path_btn)
+        path_btn_layout.addWidget(self.remove_path_btn)
         path_btn_layout.addStretch()
-        right_layout.addLayout(path_btn_layout)
+        path_layout.addLayout(path_btn_layout)
 
-        right_label = QLabel("本地路径:")
-        right_layout.addWidget(right_label)
+        self.path_placeholder = QLabel("请在左侧选择一个仓库")
+        self.path_placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.path_placeholder.setStyleSheet("color: palette(mid); padding: 24px;")
+        self.path_placeholder.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         self.path_table = QTableWidget()
         self.path_table.setColumnCount(1)
         self.path_table.setHorizontalHeaderLabels(["路径"])
+        self.path_table.verticalHeader().setVisible(False)
         self.path_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        right_layout.addWidget(self.path_table)
+        self.path_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.path_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.path_table.setAlternatingRowColors(True)
+        self.path_table.hide()
 
-        splitter.addWidget(right_widget)
+        path_layout.addWidget(self.path_placeholder)
+        path_layout.addWidget(self.path_table)
 
-        layout.addWidget(splitter)
+        self.path_group.setMinimumWidth(360)
+        splitter.addWidget(self.path_group)
+
+        splitter.setStretchFactor(0, 2)
+        splitter.setStretchFactor(1, 3)
+        splitter.setSizes([320, 480])
+
+        layout.addWidget(splitter, 1)
+        self._update_path_panel_state()
+
+    def _update_path_panel_state(self):
+        """根据是否选中仓库更新右侧面板"""
+        has_repo = bool(self._selected_repo)
+        self.add_path_btn.setEnabled(has_repo)
+        self.remove_path_btn.setEnabled(has_repo)
+        self.path_table.setVisible(has_repo)
+        self.path_placeholder.setVisible(not has_repo)
+        if has_repo:
+            self.path_group.setTitle(f"本地路径 — {self._selected_repo}")
+        else:
+            self.path_group.setTitle("本地路径")
 
     def load_data(self, config_data):
         """加载数据"""
@@ -94,27 +129,36 @@ class ProjectsTab(QWidget):
             self.repo_table.setItem(row, 0, QTableWidgetItem(repo_name))
             self.repo_table.setItem(row, 1, QTableWidgetItem(str(len(paths))))
 
-        # 清空路径表
+        self._selected_repo = None
         self.path_table.setRowCount(0)
+        self._update_path_panel_state()
+
+        if self.repo_table.rowCount() > 0:
+            self.repo_table.selectRow(0)
 
     def on_repo_selected(self):
         """仓库选择改变事件"""
         selected_items = self.repo_table.selectedItems()
         if not selected_items:
+            self._selected_repo = None
+            self.path_table.setRowCount(0)
+            self._update_path_panel_state()
             return
 
         row = selected_items[0].row()
-        repo_name = self.repo_table.item(row, 0).text()
+        self._selected_repo = self.repo_table.item(row, 0).text()
 
         config_data = self.parent_window.get_config_data()
         github_repos = config_data.get("githubRepoPaths", {})
-        paths = github_repos.get(repo_name, [])
+        paths = github_repos.get(self._selected_repo, [])
 
         self.path_table.setRowCount(0)
         for path in paths:
             path_row = self.path_table.rowCount()
             self.path_table.insertRow(path_row)
             self.path_table.setItem(path_row, 0, QTableWidgetItem(path))
+
+        self._update_path_panel_state()
 
     def add_repo(self):
         """添加仓库"""
@@ -133,6 +177,11 @@ class ProjectsTab(QWidget):
             self.parent_window.save_config_to_file()
             self.load_data(config_data)
             self.parent_window.raw_config_tab.load_data(config_data)
+
+            for row in range(self.repo_table.rowCount()):
+                if self.repo_table.item(row, 0).text() == repo_name:
+                    self.repo_table.selectRow(row)
+                    break
 
             QMessageBox.information(self, "成功", f"仓库 '{repo_name}' 已添加!")
 
@@ -167,21 +216,16 @@ class ProjectsTab(QWidget):
 
     def add_path(self):
         """添加路径"""
-        selected_items = self.repo_table.selectedItems()
-        if not selected_items:
+        if not self._selected_repo:
             QMessageBox.warning(self, "警告", "请先选择一个仓库")
             return
 
-        row = selected_items[0].row()
-        repo_name = self.repo_table.item(row, 0).text()
-
-        # 浏览文件夹
         folder_path = QFileDialog.getExistingDirectory(self, "选择项目文件夹")
         if folder_path:
             config_data = self.parent_window.get_config_data()
             github_repos = config_data.get("githubRepoPaths", {})
-            if repo_name in github_repos:
-                paths = github_repos[repo_name]
+            if self._selected_repo in github_repos:
+                paths = github_repos[self._selected_repo]
                 if folder_path not in paths:
                     paths.append(folder_path)
 
@@ -191,21 +235,20 @@ class ProjectsTab(QWidget):
                     self.on_repo_selected()
                     self.parent_window.raw_config_tab.load_data(config_data)
 
-                    QMessageBox.information(self, "成功", f"路径已添加到 '{repo_name}'!")
+                    QMessageBox.information(self, "成功", f"路径已添加到 '{self._selected_repo}'!")
                 else:
                     QMessageBox.warning(self, "警告", "该路径已存在")
 
     def remove_path(self):
         """删除路径"""
-        selected_repo_items = self.repo_table.selectedItems()
-        selected_path_items = self.path_table.selectedItems()
-
-        if not selected_repo_items or not selected_path_items:
-            QMessageBox.warning(self, "警告", "请先选择仓库和路径")
+        if not self._selected_repo:
+            QMessageBox.warning(self, "警告", "请先选择一个仓库")
             return
 
-        repo_row = selected_repo_items[0].row()
-        repo_name = self.repo_table.item(repo_row, 0).text()
+        selected_path_items = self.path_table.selectedItems()
+        if not selected_path_items:
+            QMessageBox.warning(self, "警告", "请先选择要删除的路径")
+            return
 
         path_row = selected_path_items[0].row()
         path = self.path_table.item(path_row, 0).text()
@@ -219,8 +262,8 @@ class ProjectsTab(QWidget):
         if reply == QMessageBox.StandardButton.Yes:
             config_data = self.parent_window.get_config_data()
             github_repos = config_data.get("githubRepoPaths", {})
-            if repo_name in github_repos:
-                paths = github_repos[repo_name]
+            if self._selected_repo in github_repos:
+                paths = github_repos[self._selected_repo]
                 if path in paths:
                     paths.remove(path)
 
