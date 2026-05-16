@@ -5,6 +5,8 @@ from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 
+from app.version import version_label
+
 
 class AboutDialog(QDialog):
     """关于对话框"""
@@ -33,9 +35,9 @@ class AboutDialog(QDialog):
         layout.addWidget(title_label)
 
         # 版本信息
-        version_label = QLabel("版本 1.0.0")
-        version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(version_label)
+        version_info = QLabel(version_label())
+        version_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(version_info)
 
         # 描述
         desc_label = QLabel("Claude Code 配置文件管理工具")

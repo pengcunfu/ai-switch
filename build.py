@@ -3,10 +3,33 @@ Claude Configuration Manager 打包脚本
 使用 PyInstaller 将应用程序编译为可执行文件
 """
 import os
+import re
 import shutil
 import sys
 import subprocess
 from pathlib import Path
+
+VERSION_FILE = Path(__file__).parent / "app" / "version.py"
+
+
+def read_version() -> tuple[str, int]:
+    """读取当前版本号与编译版本号。"""
+    text = VERSION_FILE.read_text(encoding="utf-8")
+    version_match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', text)
+    build_match = re.search(r"__build__\s*=\s*(\d+)", text)
+    if not version_match or not build_match:
+        raise ValueError(f"无法解析版本文件: {VERSION_FILE}")
+    return version_match.group(1), int(build_match.group(1))
+
+
+def bump_build_number() -> tuple[str, int]:
+    """编译前递增编译版本号，并写回 version.py。"""
+    text = VERSION_FILE.read_text(encoding="utf-8")
+    version, build = read_version()
+    build += 1
+    text = re.sub(r"__build__\s*=\s*\d+", f"__build__ = {build}", text, count=1)
+    VERSION_FILE.write_text(text, encoding="utf-8")
+    return version, build
 
 
 def run_command(cmd):
@@ -32,10 +55,11 @@ def build():
         "main.py",
     ]
 
-    # 切换到项目根目录
     os.chdir(project_root)
 
-    # 执行打包
+    version, build = bump_build_number()
+    print(f"编译版本: {version} (build {build})")
+
     try:
         run_command(pyinstaller_args)
 
@@ -52,6 +76,7 @@ def build():
             print(f"  已删除: {build_dir}")
 
         print("\n打包成功!")
+        print(f"  版本: {version} · 编译 {build}")
         print(f"  可执行文件位置: {project_root / 'dist' / 'ClaudeConfigManager.exe'}")
     except subprocess.CalledProcessError as e:
         print(f"\n打包失败: {e}")

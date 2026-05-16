@@ -1,4 +1,6 @@
 """
 Claude Config Manager Application
 """
-__version__ = "1.0.0"
+from app.version import __build__, __version__
+
+__all__ = ["__version__", "__build__"]
