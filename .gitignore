@@ -1,24 +1,12 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+# Go
+build/bin/
+
+# Node
+node_modules/
+
+# Frontend build output (keep placeholder dir for go:embed)
+frontend/dist/*
+!frontend/dist/.gitkeep
 
 # IDE
 .vscode/
@@ -32,7 +20,6 @@ wheels/
 Thumbs.db
 
 # Project specific
-main_old.py
 *.bak
 .claude/
 *.spec
