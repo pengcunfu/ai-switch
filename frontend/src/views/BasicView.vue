@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import {
   NCard, NForm, NFormItem, NCheckbox, NSelect, NInput, NButton,
-  NSpace, NText, useMessage, useDialog,
+  NGrid, NGi, NSpace, NText, useMessage, useDialog,
 } from 'naive-ui'
 import { useConfigStore } from '../stores/config'
 import {

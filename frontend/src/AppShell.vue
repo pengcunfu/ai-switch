@@ -21,7 +21,7 @@ const showConfigJson = ref(false)
 const menuOptions = [
   { label: '统计信息', key: 'stats' },
   { label: '基础配置', key: 'basic' },
-  { label: '模型与权限', key: 'model-permissions' },
+  { label: '模型与权限', key: 'modelPermissions' },
   { label: '功能配置', key: 'features' },
   { label: '外观与界面', key: 'appearance' },
   { label: '集成与工具', key: 'integration' },
@@ -83,13 +83,7 @@ onMounted(async () => {
   <n-layout style="height: 100vh">
     <n-layout-header bordered style="padding: 0 16px; height: 56px; display: flex; align-items: center; gap: 24px">
       <div style="font-weight: 700; font-size: 16px; white-space: nowrap">Claude Configuration Manager</div>
-      <n-menu
-        mode="horizontal"
-        :options="menuOptions"
-        :value="activeKey"
-        @update:value="onMenuSelect"
-        style="flex: 1"
-      />
+      <div style="flex: 1"></div>
       <n-space :size="8">
         <n-button size="small" @click="openConfigLocation">打开配置位置</n-button>
         <n-button size="small" @click="openSkillsFolder">Skills 文件夹</n-button>
@@ -98,6 +92,15 @@ onMounted(async () => {
         <n-button size="small" @click="refreshConfig">刷新</n-button>
         <n-button size="small" @click="showAbout = true">关于</n-button>
       </n-space>
+    </n-layout-header>
+
+    <n-layout-header bordered style="padding: 0 16px">
+      <n-menu
+        mode="horizontal"
+        :options="menuOptions"
+        :value="activeKey"
+        @update:value="onMenuSelect"
+      />
     </n-layout-header>
 
     <n-layout-content style="padding: 12px 16px">
