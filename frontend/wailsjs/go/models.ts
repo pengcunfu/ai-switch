@@ -1,9 +1,9 @@
-export namespace env {
+export namespace config {
 	
 	export class ApplyResult {
 	    applied: string[];
 	    message: string;
-	    method: string;
+	    path: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new ApplyResult(source);
@@ -13,7 +13,7 @@ export namespace env {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.applied = source["applied"];
 	        this.message = source["message"];
-	        this.method = source["method"];
+	        this.path = source["path"];
 	    }
 	}
 

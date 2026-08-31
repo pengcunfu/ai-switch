@@ -6,6 +6,14 @@ import (
 	"testing"
 )
 
+// withFakeHome 将 USERPROFILE/HOME 指向临时目录，避免测试改动真实配置。
+func withFakeHome(t *testing.T) {
+	t.Helper()
+	dir := t.TempDir()
+	t.Setenv("USERPROFILE", dir)
+	t.Setenv("HOME", dir)
+}
+
 func TestLoadMissingReturnsEmpty(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, ".claude.json")
@@ -64,6 +72,71 @@ func TestWriteJSONStringValidation(t *testing.T) {
 	}
 	if cfg["a"] != float64(1) {
 		t.Fatalf("解析结果错误: %v", cfg)
+	}
+}
+
+func TestApplyProviderProfileWritesSettingsEnv(t *testing.T) {
+	withFakeHome(t)
+
+	// 预置 settings.json（含旧 env 与无关字段），验证合并而非覆盖
+	path, err := SettingsPath()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte(`{"theme":"dark","env":{"API_TIMEOUT_MS":"1000"}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := ApplyProviderProfile(Profile{AuthToken: "tok-1", BaseURL: "https://example.com", Model: "m1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Applied) != 3 {
+		t.Fatalf("应写入 3 项, 实际 %v", res.Applied)
+	}
+
+	cfg, err := LoadSettings()
+	if err != nil {
+		t.Fatal(err)
+	}
+	env, _ := cfg["env"].(map[string]interface{})
+	if env["ANTHROPIC_AUTH_TOKEN"] != "tok-1" ||
+		env["ANTHROPIC_BASE_URL"] != "https://example.com" ||
+		env["ANTHROPIC_MODEL"] != "m1" {
+		t.Fatalf("env 字段写入错误: %v", env)
+	}
+	if env["API_TIMEOUT_MS"] != "1000" {
+		t.Fatalf("不应覆盖无关的 env 键: %v", env)
+	}
+	if cfg["theme"] != "dark" {
+		t.Fatalf("不应覆盖无关配置: %v", cfg)
+	}
+
+	// 空字段应删除对应键
+	res, err = ApplyProviderProfile(Profile{AuthToken: "tok-2"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Applied) != 1 {
+		t.Fatalf("只应写入 1 项, 实际 %v", res.Applied)
+	}
+	cfg, _ = LoadSettings()
+	env, _ = cfg["env"].(map[string]interface{})
+	if _, ok := env["ANTHROPIC_MODEL"]; ok {
+		t.Fatalf("空 Model 应删除 ANTHROPIC_MODEL 键: %v", env)
+	}
+	if env["ANTHROPIC_AUTH_TOKEN"] != "tok-2" {
+		t.Fatalf("authToken 未更新: %v", env)
+	}
+}
+
+func TestApplyProviderProfileEmptyFails(t *testing.T) {
+	withFakeHome(t)
+	if _, err := ApplyProviderProfile(Profile{}); err == nil {
+		t.Fatal("全空档案应报错")
 	}
 }
 

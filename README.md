@@ -8,7 +8,7 @@
 ## 功能
 
 - **统计信息**：总请求数 / 成本 / Tokens、Skills 使用统计、项目活跃度、模型使用统计
-- **基础配置**：自动更新、服务商档案管理（Auth Token / Base URL / Model）、环境变量写入（Windows `setx` / Unix `env.sh`）、迁移状态、用户信息、配置备份与恢复
+- **基础配置**：自动更新、服务商档案管理（Auth Token / Base URL / Model）、将服务商配置写入 `~/.claude/settings.json` 的 `env` 字段（仅对 Claude Code 生效）、迁移状态、用户信息、配置备份与恢复
 - **模型与权限**：Model 配置（默认模型、参数、上下文、使用限制）、权限管理（全局/项目工具权限）
 - **功能配置**：MCP 服务器管理（增删改、连接测试、工具/资源列表）、Skills 管理、Hooks 配置、Memory 系统
 - **外观与界面**：主题外观（模式/字体/颜色/高亮）、UI/UX 设置
@@ -48,10 +48,9 @@ wails build
 ├── internal/
 │   ├── version/            # 版本管理
 │   ├── buildver/           # 打包前自动递增编译号
-│   ├── config/             # ~/.claude.json 读写/备份/导出/导入/重置
+│   ├── config/             # ~/.claude.json 与 ~/.claude/settings.json 读写/备份/服务商配置
 │   ├── skills/             # Skills 扫描与 SKILL.md 管理
 │   ├── mcp/                # MCP 连接测试与工具列表（mcp-go）
-│   ├── env/                # 环境变量写入
 │   ├── explorer/           # 系统文件管理器打开目录
 │   └── dialog/             # 原生文件对话框封装
 ├── frontend/               # Vue 3 + Vite + TS + Naive UI

@@ -9,7 +9,6 @@ import (
 
 	"claude-config-manager/internal/config"
 	"claude-config-manager/internal/dialog"
-	"claude-config-manager/internal/env"
 	"claude-config-manager/internal/explorer"
 	"claude-config-manager/internal/mcp"
 	"claude-config-manager/internal/skills"
@@ -131,11 +130,12 @@ func (a *App) SaveFile(title, defaultName string) (string, error) {
 	return dialog.SaveFile(a.ctx, title, defaultName)
 }
 
-// ==================== 环境变量 ====================
+// ==================== 服务商配置 ====================
 
-// ApplyEnvVars 将服务商档案写入系统环境变量（Windows setx / Unix env.sh）。
-func (a *App) ApplyEnvVars(profile map[string]interface{}) (*env.ApplyResult, error) {
-	p := env.Profile{}
+// ApplyProviderProfile 将服务商档案写入 ~/.claude/settings.json 的 env 字段，
+// 取代写入系统环境变量的方式，仅对 Claude Code 生效。
+func (a *App) ApplyProviderProfile(profile map[string]interface{}) (*config.ApplyResult, error) {
+	p := config.Profile{}
 	if v, ok := profile["authToken"].(string); ok {
 		p.AuthToken = v
 	}
@@ -145,7 +145,7 @@ func (a *App) ApplyEnvVars(profile map[string]interface{}) (*env.ApplyResult, er
 	if v, ok := profile["model"].(string); ok {
 		p.Model = v
 	}
-	return env.Apply(p)
+	return config.ApplyProviderProfile(p)
 }
 
 // ==================== MCP 服务器 ====================

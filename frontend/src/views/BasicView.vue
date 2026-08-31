@@ -6,7 +6,7 @@ import {
 } from 'naive-ui'
 import { useConfigStore } from '../stores/config'
 import {
-  ApplyEnvVars, ExportConfig, ImportConfig, ResetConfig,
+  ApplyProviderProfile, ExportConfig, ImportConfig, ResetConfig,
   SaveFile, PickFile,
 } from '../../wailsjs/go/main/App'
 
@@ -77,7 +77,7 @@ function deleteProfile() {
   })
 }
 
-async function applyEnvVars() {
+async function applyProfile() {
   ensureProfiles()
   const profile = activeProfile.value
   if (!profile) {
@@ -90,10 +90,10 @@ async function applyEnvVars() {
     return
   }
   try {
-    const result = await ApplyEnvVars(profile)
-    message.success(result.message || '环境变量已设置')
-    store.statusMessage = '环境变量已应用: ' + profile.name
-    // 应用环境变量前先持久化档案
+    const result = await ApplyProviderProfile(profile)
+    message.success(result.message || '配置已写入 settings.json')
+    store.statusMessage = '服务商配置已写入 settings.json: ' + profile.name
+    // 应用配置前先持久化档案
     await store.save()
   } catch (e: any) {
     message.error(String(e))
@@ -230,7 +230,8 @@ async function saveSettings() {
           </n-gi>
         </n-grid>
 
-        <n-button size="small" type="warning" @click="applyEnvVars">应用环境变量（写入系统）</n-button>
+        <n-button size="small" type="warning" @click="applyProfile">应用配置（写入 settings.json）</n-button>
+        <n-text depth="3" style="font-size: 12px">将档案的 Auth Token / Base URL / Model 写入 ~/.claude/settings.json 的 env 字段，仅对 Claude Code 生效，不影响系统环境变量</n-text>
       </n-space>
     </n-card>
 

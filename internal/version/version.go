@@ -6,7 +6,7 @@ import "fmt"
 const Version = "1.0.0"
 
 // Build 编译版本号，打包时由 scripts 自动递增。
-var Build = 8
+var Build = 47
 
 // Label 返回用于界面显示的完整版本字符串。
 func Label() string {
