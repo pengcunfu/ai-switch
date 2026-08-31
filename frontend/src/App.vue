@@ -8,7 +8,7 @@ import { useConfigStore } from './stores/config'
 import AppShell from './AppShell.vue'
 
 const store = useConfigStore()
-const darkTheme = computed(() => store.cfg.theme?.mode === 'dark')
+const darkTheme = computed(() => store.appState.theme?.mode === 'dark')
 </script>
 
 <template>

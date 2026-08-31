@@ -18,6 +18,18 @@ export function ExportConfig(arg1, arg2) {
   return window['go']['main']['App']['ExportConfig'](arg1, arg2);
 }
 
+export function GetAppDataPath() {
+  return window['go']['main']['App']['GetAppDataPath']();
+}
+
+export function GetAppState() {
+  return window['go']['main']['App']['GetAppState']();
+}
+
+export function GetBackupDir() {
+  return window['go']['main']['App']['GetBackupDir']();
+}
+
 export function GetCodexProfiles() {
   return window['go']['main']['App']['GetCodexProfiles']();
 }
@@ -72,6 +84,10 @@ export function ReadConfigFile(arg1) {
 
 export function ResetConfig() {
   return window['go']['main']['App']['ResetConfig']();
+}
+
+export function SaveAppState(arg1) {
+  return window['go']['main']['App']['SaveAppState'](arg1);
 }
 
 export function SaveConfig(arg1) {

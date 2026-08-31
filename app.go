@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"claude-config-manager/internal/appdata"
 	"claude-config-manager/internal/codex"
 	"claude-config-manager/internal/config"
 	"claude-config-manager/internal/dialog"
@@ -80,6 +81,28 @@ func (a *App) ReadConfigFile(path string) (string, error) {
 // WriteConfigFile 将 JSON 字符串保存到配置文件，返回解析后的配置。
 func (a *App) WriteConfigFile(path, text string) (map[string]interface{}, error) {
 	return config.WriteJSONString(path, text)
+}
+
+// ==================== 应用数据 ====================
+
+// GetAppDataPath 返回应用数据目录（<文档>/FNSoftware/.aiswitch）。
+func (a *App) GetAppDataPath() (string, error) {
+	return appdata.AppDataDir()
+}
+
+// GetBackupDir 返回配置备份目录（AppDataDir/backups）。
+func (a *App) GetBackupDir() (string, error) {
+	return appdata.BackupDir()
+}
+
+// GetAppState 读取应用自身状态（如 activeTool、uiux、theme）。
+func (a *App) GetAppState() (map[string]interface{}, error) {
+	return appdata.LoadState()
+}
+
+// SaveAppState 保存应用自身状态到 app-state.json。
+func (a *App) SaveAppState(state map[string]interface{}) error {
+	return appdata.SaveState(state)
 }
 
 // ==================== 版本信息 ====================

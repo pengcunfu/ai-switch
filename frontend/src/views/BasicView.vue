@@ -7,7 +7,7 @@ import {
 import { useConfigStore } from '../stores/config'
 import {
   ApplyProviderProfile, ExportConfig, ImportConfig, ResetConfig,
-  SaveFile, PickFile,
+  SaveFile, PickFile, GetBackupDir, OpenInExplorer,
 } from '../../wailsjs/go/main/App'
 
 const store = useConfigStore()
@@ -185,6 +185,16 @@ async function saveSettings() {
     message.error(`保存设置失败: ${e}`)
   }
 }
+
+async function openBackupDir() {
+  try {
+    const dir = await GetBackupDir()
+    await OpenInExplorer(dir)
+    store.statusMessage = `已打开备份目录: ${dir}`
+  } catch (e: any) {
+    message.error(`打开备份目录失败: ${e}`)
+  }
+}
 </script>
 
 <template>
@@ -268,8 +278,9 @@ async function saveSettings() {
         <n-button size="small" @click="exportConfig">导出配置</n-button>
         <n-button size="small" @click="importConfig">导入配置</n-button>
         <n-button size="small" type="error" @click="resetConfig">重置为默认</n-button>
+        <n-button size="small" @click="openBackupDir">打开备份目录</n-button>
       </n-space>
-      <n-text depth="3" style="font-size: 12px; display: block; margin-top: 8px">提示: 保存配置时会自动创建 .bak 备份文件</n-text>
+      <n-text depth="3" style="font-size: 12px; display: block; margin-top: 8px">提示: 保存/重置/切换时会在数据目录 .aiswitch\backups 下自动创建备份</n-text>
     </n-card>
 
     <div style="display: flex; justify-content: flex-end">

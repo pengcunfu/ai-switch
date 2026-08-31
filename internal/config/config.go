@@ -7,7 +7,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
+
+	"claude-config-manager/internal/appdata"
 )
 
 // ConfigPath 返回 Claude Code 全局配置文件路径。
@@ -127,17 +128,9 @@ func Reset() (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 带时间戳备份
-	if _, err := os.Stat(path); err == nil {
-		stamp := time.Now().Format("20060102_150405")
-		bak := path + ".bak." + stamp
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return nil, err
-		}
-		if err := os.WriteFile(bak, data, 0o644); err != nil {
-			return nil, err
-		}
+	// 带时间戳备份到应用数据目录
+	if _, err := appdata.BackupFile(path); err != nil {
+		return nil, err
 	}
 	cfg := DefaultConfig()
 	if err := WriteJSON(path, cfg); err != nil {
@@ -162,17 +155,7 @@ func ImportFromPath(sourcePath string) (map[string]interface{}, error) {
 	return cfg, nil
 }
 
-// backup 将现有配置文件复制为 .bak。
+// backup 将现有配置文件复制为 .bak（存入应用数据目录的 backups 下）。
 func backup(path string) error {
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) {
-			return nil
-		}
-		return err
-	}
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(path+".bak", data, 0o644)
+	return appdata.BackupFileRolling(path)
 }

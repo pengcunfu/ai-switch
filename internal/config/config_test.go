@@ -6,12 +6,13 @@ import (
 	"testing"
 )
 
-// withFakeHome 将 USERPROFILE/HOME 指向临时目录，避免测试改动真实配置。
+// withFakeHome 将 USERPROFILE/HOME/AISWITCH_APPDATA 指向临时目录，避免测试改动真实配置。
 func withFakeHome(t *testing.T) {
 	t.Helper()
 	dir := t.TempDir()
 	t.Setenv("USERPROFILE", dir)
 	t.Setenv("HOME", dir)
+	t.Setenv("AISWITCH_APPDATA", filepath.Join(dir, "appdata"))
 }
 
 func TestLoadMissingReturnsEmpty(t *testing.T) {
@@ -27,26 +28,28 @@ func TestLoadMissingReturnsEmpty(t *testing.T) {
 }
 
 func TestSaveBackupAndRoundTrip(t *testing.T) {
+	withFakeHome(t)
 	dir := t.TempDir()
 	path := filepath.Join(dir, ".claude.json")
+	bakPath := filepath.Join(os.Getenv("AISWITCH_APPDATA"), "backups", ".claude.json.bak")
 
-	// 首次写入无备份
+	// 首次写入无备份（原文件不存在）
 	first := map[string]interface{}{"autoUpdates": true, "name": "测试"}
 	if err := SaveTo(path, first); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := os.Stat(path + ".bak"); !os.IsNotExist(err) {
-		t.Fatal("不应生成 .bak 当原文件不存在")
+	if _, err := os.Stat(bakPath); !os.IsNotExist(err) {
+		t.Fatal("不应生成备份当原文件不存在")
 	}
 
-	// 第二次写入应生成 .bak 且内容为首次
+	// 第二次写入应在应用数据目录生成备份且内容为首次
 	second := map[string]interface{}{"autoUpdates": false}
 	if err := SaveTo(path, second); err != nil {
 		t.Fatal(err)
 	}
-	bak, err := os.ReadFile(path + ".bak")
+	bak, err := os.ReadFile(bakPath)
 	if err != nil {
-		t.Fatalf("应生成 .bak 备份: %v", err)
+		t.Fatalf("应生成备份: %v", err)
 	}
 	got, err := LoadFrom(path)
 	if err != nil {
@@ -56,11 +59,12 @@ func TestSaveBackupAndRoundTrip(t *testing.T) {
 		t.Fatalf("配置未正确保存: %v", got)
 	}
 	if string(bak) == "" {
-		t.Fatal(".bak 备份内容为空")
+		t.Fatal("备份内容为空")
 	}
 }
 
 func TestWriteJSONStringValidation(t *testing.T) {
+	withFakeHome(t)
 	dir := t.TempDir()
 	path := filepath.Join(dir, ".claude.json")
 	if _, err := WriteJSONString(path, "{invalid json"); err == nil {
@@ -141,6 +145,7 @@ func TestApplyProviderProfileEmptyFails(t *testing.T) {
 }
 
 func TestResetWritesDefault(t *testing.T) {
+	withFakeHome(t)
 	dir := t.TempDir()
 	path := filepath.Join(dir, ".claude.json")
 	if err := os.WriteFile(path, []byte(`{"old": true}`), 0o644); err != nil {

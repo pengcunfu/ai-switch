@@ -13,6 +13,12 @@ export function DeleteSkill(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function ExportConfig(arg1:Record<string, any>,arg2:string):Promise<void>;
 
+export function GetAppDataPath():Promise<string>;
+
+export function GetAppState():Promise<Record<string, any>>;
+
+export function GetBackupDir():Promise<string>;
+
 export function GetCodexProfiles():Promise<codex.ListResult>;
 
 export function GetConfig():Promise<Record<string, any>>;
@@ -40,6 +46,8 @@ export function PickFile(arg1:string,arg2:string):Promise<string>;
 export function ReadConfigFile(arg1:string):Promise<string>;
 
 export function ResetConfig():Promise<Record<string, any>>;
+
+export function SaveAppState(arg1:Record<string, any>):Promise<void>;
 
 export function SaveConfig(arg1:Record<string, any>):Promise<void>;
 

@@ -36,19 +36,19 @@ const codexMenuOptions = [
 ]
 
 const activeTool = computed({
-  get: () => (store.cfg.uiux?.activeTool === 'codex' ? 'codex' : 'claude'),
-  set: (v: string) => { store.cfg.uiux.activeTool = v },
+  get: () => (store.appState.activeTool === 'codex' ? 'codex' : 'claude'),
+  set: (v: string) => { store.appState.activeTool = v },
 })
 const menuOptions = computed(() => activeTool.value === 'codex' ? codexMenuOptions : claudeMenuOptions)
 const firstRouteOfTool = (tool: string) => (tool === 'codex' ? 'codexModels' : 'stats')
 
 async function onToolChange(tool: string) {
-  await store.save()
+  await store.saveAppState()
   router.push({ name: firstRouteOfTool(tool) })
 }
 
 const activeKey = computed(() => route.name as string)
-const showConfigPath = computed(() => store.cfg.uiux?.showConfigPath ?? true)
+const showConfigPath = computed(() => store.appState.uiux?.showConfigPath ?? true)
 
 function onMenuSelect(key: string) {
   router.push({ name: key })
@@ -98,7 +98,8 @@ onMounted(async () => {
   }
   // 路由优先：直接落在 Codex 页面（如刷新/深链）时强制工具为 Codex
   if (route.name === 'codexModels') {
-    store.cfg.uiux.activeTool = 'codex'
+    store.appState.activeTool = 'codex'
+    await store.saveAppState()
   }
 })
 </script>

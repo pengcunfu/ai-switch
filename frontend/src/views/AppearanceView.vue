@@ -33,10 +33,10 @@ const highlightPresetOptions = [
 ]
 
 const customColors = computed(() => {
-  if (typeof store.cfg.theme.customColors !== 'object' || store.cfg.theme.customColors === null) {
-    store.cfg.theme.customColors = {}
+  if (typeof store.appState.theme.customColors !== 'object' || store.appState.theme.customColors === null) {
+    store.appState.theme.customColors = {}
   }
-  return store.cfg.theme.customColors
+  return store.appState.theme.customColors
 })
 
 const colorDefs = [
@@ -53,7 +53,7 @@ function resetTheme() {
     positiveText: '重置',
     negativeText: '取消',
     onPositiveClick: () => {
-      store.cfg.theme = {
+      store.appState.theme = {
         mode: 'system',
         colorScheme: 'default',
         uiFont: '默认',
@@ -73,7 +73,7 @@ function resetTheme() {
 
 async function saveTheme() {
   try {
-    await store.save()
+    await store.saveAppState()
     message.success('主题配置已保存! 部分设置可能需要重启应用后生效。')
   } catch (e: any) {
     message.error(`保存配置失败: ${e}`)
@@ -94,10 +94,10 @@ const tabPositionOptions = [
 
 async function saveUIUX() {
   try {
-    if (typeof store.cfg.uiux.notifications !== 'object' || store.cfg.uiux.notifications === null) {
-      store.cfg.uiux.notifications = {}
+    if (typeof store.appState.uiux.notifications !== 'object' || store.appState.uiux.notifications === null) {
+      store.appState.uiux.notifications = {}
     }
-    await store.save()
+    await store.saveAppState()
     message.success('UI/UX 配置已保存! 部分设置可能需要重启应用后生效。')
   } catch (e: any) {
     message.error(`保存配置失败: ${e}`)
@@ -111,7 +111,7 @@ function resetUIUX() {
     positiveText: '重置',
     negativeText: '取消',
     onPositiveClick: () => {
-      store.cfg.uiux = {
+      store.appState.uiux = {
         showStatusBar: true,
         showToolbar: true,
         showConfigPath: true,
@@ -138,10 +138,10 @@ function resetUIUX() {
         <n-card size="small" title="主题设置">
           <n-form label-placement="left" label-width="120">
             <n-form-item label="主题模式:">
-              <n-select v-model:value="store.cfg.theme.mode" :options="themeModeOptions" style="width: 220px" />
+              <n-select v-model:value="store.appState.theme.mode" :options="themeModeOptions" style="width: 220px" />
             </n-form-item>
             <n-form-item label="配色方案:">
-              <n-select v-model:value="store.cfg.theme.colorScheme" :options="colorSchemeOptions" style="width: 220px" />
+              <n-select v-model:value="store.appState.theme.colorScheme" :options="colorSchemeOptions" style="width: 220px" />
             </n-form-item>
           </n-form>
         </n-card>
@@ -149,16 +149,16 @@ function resetUIUX() {
         <n-card size="small" title="字体设置">
           <n-form label-placement="left" label-width="120">
             <n-form-item label="界面字体:">
-              <n-select v-model:value="store.cfg.theme.uiFont" :options="uiFontOptions" style="width: 220px" />
+              <n-select v-model:value="store.appState.theme.uiFont" :options="uiFontOptions" style="width: 220px" />
             </n-form-item>
             <n-form-item label="代码字体:">
-              <n-select v-model:value="store.cfg.theme.codeFont" :options="codeFontOptions" style="width: 220px" />
+              <n-select v-model:value="store.appState.theme.codeFont" :options="codeFontOptions" style="width: 220px" />
             </n-form-item>
             <n-form-item label="基础字体大小:">
-              <n-input-number v-model:value="store.cfg.theme.fontSize" :min="8" :max="24" style="width: 160px" />
+              <n-input-number v-model:value="store.appState.theme.fontSize" :min="8" :max="24" style="width: 160px" />
             </n-form-item>
             <n-form-item label="代码字体大小:">
-              <n-input-number v-model:value="store.cfg.theme.codeFontSize" :min="8" :max="24" style="width: 160px" />
+              <n-input-number v-model:value="store.appState.theme.codeFontSize" :min="8" :max="24" style="width: 160px" />
             </n-form-item>
           </n-form>
         </n-card>
@@ -174,10 +174,10 @@ function resetUIUX() {
         <n-card size="small" title="代码高亮设置">
           <n-form label-placement="left" label-width="120">
             <n-form-item label="语法高亮:">
-              <n-checkbox v-model:checked="store.cfg.theme.syntaxHighlight">启用语法高亮</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.theme.syntaxHighlight">启用语法高亮</n-checkbox>
             </n-form-item>
             <n-form-item label="JSON 高亮方案:">
-              <n-select v-model:value="store.cfg.theme.jsonHighlightPreset" :options="highlightPresetOptions" style="width: 220px" />
+              <n-select v-model:value="store.appState.theme.jsonHighlightPreset" :options="highlightPresetOptions" style="width: 220px" />
             </n-form-item>
           </n-form>
         </n-card>
@@ -186,15 +186,15 @@ function resetUIUX() {
           <n-form label-placement="left" label-width="120">
             <n-form-item label="窗口透明度:">
               <n-space :size="12" style="width: 320px">
-                <n-slider v-model:value="store.cfg.theme.windowOpacity" :min="0.5" :max="1" :step="0.05" style="flex: 1" />
-                <n-text>{{ Number(store.cfg.theme.windowOpacity).toFixed(2) }}</n-text>
+                <n-slider v-model:value="store.appState.theme.windowOpacity" :min="0.5" :max="1" :step="0.05" style="flex: 1" />
+                <n-text>{{ Number(store.appState.theme.windowOpacity).toFixed(2) }}</n-text>
               </n-space>
             </n-form-item>
             <n-form-item label="界面动画:">
-              <n-checkbox v-model:checked="store.cfg.theme.animationEnabled">启用界面动画</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.theme.animationEnabled">启用界面动画</n-checkbox>
             </n-form-item>
             <n-form-item label="窗口阴影:">
-              <n-checkbox v-model:checked="store.cfg.theme.shadowEnabled">显示窗口阴影</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.theme.shadowEnabled">显示窗口阴影</n-checkbox>
             </n-form-item>
           </n-form>
         </n-card>
@@ -215,16 +215,16 @@ function resetUIUX() {
         <n-card size="small" title="界面显示">
           <n-form label-placement="left" label-width="140">
             <n-form-item label="状态栏:">
-              <n-checkbox v-model:checked="store.cfg.uiux.showStatusBar">显示状态栏</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.showStatusBar">显示状态栏</n-checkbox>
             </n-form-item>
             <n-form-item label="工具栏:">
-              <n-checkbox v-model:checked="store.cfg.uiux.showToolbar">显示工具栏</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.showToolbar">显示工具栏</n-checkbox>
             </n-form-item>
             <n-form-item label="配置文件路径:">
-              <n-checkbox v-model:checked="store.cfg.uiux.showConfigPath">显示配置文件路径</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.showConfigPath">显示配置文件路径</n-checkbox>
             </n-form-item>
             <n-form-item label="标签页位置:">
-              <n-select v-model:value="store.cfg.uiux.tabPosition" :options="tabPositionOptions" style="width: 200px" />
+              <n-select v-model:value="store.appState.uiux.tabPosition" :options="tabPositionOptions" style="width: 200px" />
             </n-form-item>
           </n-form>
         </n-card>
@@ -232,16 +232,16 @@ function resetUIUX() {
         <n-card size="small" title="交互设置">
           <n-form label-placement="left" label-width="140">
             <n-form-item label="双击编辑:">
-              <n-checkbox v-model:checked="store.cfg.uiux.doubleClickToEdit">双击编辑项目</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.doubleClickToEdit">双击编辑项目</n-checkbox>
             </n-form-item>
             <n-form-item label="删除确认:">
-              <n-checkbox v-model:checked="store.cfg.uiux.confirmBeforeDelete">删除前确认</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.confirmBeforeDelete">删除前确认</n-checkbox>
             </n-form-item>
             <n-form-item label="自动保存:">
-              <n-checkbox v-model:checked="store.cfg.uiux.autoSave">自动保存配置</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.autoSave">自动保存配置</n-checkbox>
             </n-form-item>
             <n-form-item label="自动保存间隔:">
-              <n-input-number v-model:value="store.cfg.uiux.autoSaveInterval" :min="1" :max="60" style="width: 160px">
+              <n-input-number v-model:value="store.appState.uiux.autoSaveInterval" :min="1" :max="60" style="width: 160px">
                 <template #suffix>分钟</template>
               </n-input-number>
             </n-form-item>
@@ -251,13 +251,13 @@ function resetUIUX() {
         <n-card size="small" title="性能设置">
           <n-form label-placement="left" label-width="140">
             <n-form-item label="Spinner 树:">
-              <n-checkbox v-model:checked="store.cfg.uiux.showSpinnerTree">显示 Spinner 树</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.showSpinnerTree">显示 Spinner 树</n-checkbox>
             </n-form-item>
             <n-form-item label="界面动画:">
-              <n-checkbox v-model:checked="store.cfg.uiux.animationsEnabled">启用界面动画</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.animationsEnabled">启用界面动画</n-checkbox>
             </n-form-item>
             <n-form-item label="刷新频率:">
-              <n-input-number v-model:value="store.cfg.uiux.refreshRate" :min="10" :max="1000" style="width: 160px">
+              <n-input-number v-model:value="store.appState.uiux.refreshRate" :min="10" :max="1000" style="width: 160px">
                 <template #suffix>ms</template>
               </n-input-number>
             </n-form-item>
@@ -267,16 +267,16 @@ function resetUIUX() {
         <n-card size="small" title="通知设置">
           <n-form label-placement="left" label-width="140">
             <n-form-item label="成功通知:">
-              <n-checkbox v-model:checked="store.cfg.uiux.notifications.showSuccess">显示成功通知</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.notifications.showSuccess">显示成功通知</n-checkbox>
             </n-form-item>
             <n-form-item label="错误通知:">
-              <n-checkbox v-model:checked="store.cfg.uiux.notifications.showError">显示错误通知</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.notifications.showError">显示错误通知</n-checkbox>
             </n-form-item>
             <n-form-item label="警告通知:">
-              <n-checkbox v-model:checked="store.cfg.uiux.notifications.showWarning">显示警告通知</n-checkbox>
+              <n-checkbox v-model:checked="store.appState.uiux.notifications.showWarning">显示警告通知</n-checkbox>
             </n-form-item>
             <n-form-item label="通知持续时间:">
-              <n-input-number v-model:value="store.cfg.uiux.notifications.duration" :min="1" :max="10" style="width: 160px">
+              <n-input-number v-model:value="store.appState.uiux.notifications.duration" :min="1" :max="10" style="width: 160px">
                 <template #suffix>秒</template>
               </n-input-number>
             </n-form-item>

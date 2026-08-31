@@ -13,7 +13,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"time"
+
+	"claude-config-manager/internal/appdata"
 )
 
 const (
@@ -250,7 +251,13 @@ func findProfile(profiles []Profile, name string) *Profile {
 	return nil
 }
 
+// readState 读取活动档案状态：优先应用数据目录，缺失时回退旧位置 ~/.codex/.active_profile。
 func readState(dir string) (string, error) {
+	if p, err := appdata.CodexStatePath(); err == nil {
+		if data, err := os.ReadFile(p); err == nil {
+			return strings.TrimSpace(string(data)), nil
+		}
+	}
 	data, err := os.ReadFile(filepath.Join(dir, stateFile))
 	if err != nil {
 		return "", err
@@ -258,8 +265,17 @@ func readState(dir string) (string, error) {
 	return strings.TrimSpace(string(data)), nil
 }
 
+// writeState 写入活动档案状态到应用数据目录，并清理旧位置文件。
 func writeState(dir, name string) error {
-	return os.WriteFile(filepath.Join(dir, stateFile), []byte(name), 0o644)
+	p, err := appdata.CodexStatePath()
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(p, []byte(name), 0o644); err != nil {
+		return err
+	}
+	_ = os.Remove(filepath.Join(dir, stateFile))
+	return nil
 }
 
 func fileExists(path string) bool {
@@ -267,17 +283,9 @@ func fileExists(path string) bool {
 	return err == nil
 }
 
-// timestampedBackup 复制文件为 path.bak.<时间戳>，返回备份路径。
+// timestampedBackup 复制文件为时间戳备份（存入应用数据目录 backups），返回备份路径。
 func timestampedBackup(path string) (string, error) {
-	bak := path + ".bak." + time.Now().Format("20060102_150405")
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return "", err
-	}
-	if err := os.WriteFile(bak, data, 0o644); err != nil {
-		return "", err
-	}
-	return bak, nil
+	return appdata.BackupFile(path)
 }
 
 // atomicCopy 写临时文件后重命名，避免目标文件被写坏。

@@ -6,19 +6,32 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"claude-config-manager/internal/appdata"
 )
 
-// withFakeCodex 将 USERPROFILE/HOME 指向临时目录并创建 ~/.codex，返回其路径。
+// withFakeCodex 将 USERPROFILE/HOME/AISWITCH_APPDATA 指向临时目录并创建 ~/.codex，返回其路径。
 func withFakeCodex(t *testing.T) string {
 	t.Helper()
 	home := t.TempDir()
 	t.Setenv("USERPROFILE", home)
 	t.Setenv("HOME", home)
+	t.Setenv("AISWITCH_APPDATA", filepath.Join(home, "appdata"))
 	dir := filepath.Join(home, ".codex")
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		t.Fatal(err)
 	}
 	return dir
+}
+
+// statePath 返回应用数据目录中的活动档案状态路径。
+func statePath(t *testing.T) string {
+	t.Helper()
+	p, err := appdata.CodexStatePath()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return p
 }
 
 // writeProfile 生成 config-<name>.toml（及可选 models-<name>.json）。
@@ -81,6 +94,7 @@ func TestLoadProfilesMissingDir(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("USERPROFILE", home)
 	t.Setenv("HOME", home)
+	t.Setenv("AISWITCH_APPDATA", filepath.Join(home, "appdata"))
 	res, err := LoadProfiles()
 	if err != nil {
 		t.Fatal(err)
@@ -125,7 +139,7 @@ func TestResolveActivePriority(t *testing.T) {
 	}
 
 	// 自定义：内容不匹配任何档案
-	if err := os.Remove(filepath.Join(dir, stateFile)); err != nil {
+	if err := os.Remove(statePath(t)); err != nil {
 		t.Fatal(err)
 	}
 	writeActive(t, dir, "model = \"custom-model\"\nmodel_provider = \"other\"\n", "")
@@ -163,7 +177,7 @@ func TestSwitchRoundTrip(t *testing.T) {
 	if got := readFile(t, filepath.Join(dir, "models-deepseek.json")); got != deepModels {
 		t.Fatalf("未补建 models-deepseek.json: %q", got)
 	}
-	if got := readFile(t, filepath.Join(dir, stateFile)); got != "mimo" {
+	if got := readFile(t, statePath(t)); got != "mimo" {
 		t.Fatalf(".active_profile 应为 mimo, 实际 %q", got)
 	}
 	if len(res.BackedUp) != 2 {
@@ -181,7 +195,7 @@ func TestSwitchRoundTrip(t *testing.T) {
 	if got := readFile(t, filepath.Join(dir, activeModels)); got != readFile(t, filepath.Join(dir, "models-deepseek.json")) {
 		t.Fatalf("models.json 未还原为 deepseek: %q", got)
 	}
-	if got := readFile(t, filepath.Join(dir, stateFile)); got != "deepseek" {
+	if got := readFile(t, statePath(t)); got != "deepseek" {
 		t.Fatalf(".active_profile 应为 deepseek, 实际 %q", got)
 	}
 
