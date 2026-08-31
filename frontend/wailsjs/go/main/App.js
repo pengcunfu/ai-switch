@@ -18,6 +18,10 @@ export function ExportConfig(arg1, arg2) {
   return window['go']['main']['App']['ExportConfig'](arg1, arg2);
 }
 
+export function GetCodexProfiles() {
+  return window['go']['main']['App']['GetCodexProfiles']();
+}
+
 export function GetConfig() {
   return window['go']['main']['App']['GetConfig']();
 }
@@ -80,6 +84,10 @@ export function SaveFile(arg1, arg2) {
 
 export function SaveSkill(arg1, arg2, arg3) {
   return window['go']['main']['App']['SaveSkill'](arg1, arg2, arg3);
+}
+
+export function SwitchCodexProfile(arg1) {
+  return window['go']['main']['App']['SwitchCodexProfile'](arg1);
 }
 
 export function TestMCPConnection(arg1) {

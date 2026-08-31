@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"claude-config-manager/internal/codex"
 	"claude-config-manager/internal/config"
 	"claude-config-manager/internal/dialog"
 	"claude-config-manager/internal/explorer"
@@ -146,6 +147,18 @@ func (a *App) ApplyProviderProfile(profile map[string]interface{}) (*config.Appl
 		p.Model = v
 	}
 	return config.ApplyProviderProfile(p)
+}
+
+// ==================== Codex 模型切换 ====================
+
+// GetCodexProfiles 列出 ~/.codex 下的配置档案与当前活动状态。
+func (a *App) GetCodexProfiles() (*codex.ListResult, error) {
+	return codex.LoadProfiles()
+}
+
+// SwitchCodexProfile 切换到指定档案，整体替换 config.toml 与 models.json。
+func (a *App) SwitchCodexProfile(name string) (*codex.SwitchResult, error) {
+	return codex.SwitchProfile(name)
 }
 
 // ==================== MCP 服务器 ====================

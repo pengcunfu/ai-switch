@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter,
-  NMenu, NSpace, NButton, NText, useMessage,
+  NMenu, NSpace, NButton, NSelect, NText, useMessage,
 } from 'naive-ui'
 import { useConfigStore } from './stores/config'
 import { OpenInExplorer, OpenSkillsFolder, OpenClaudeFolder } from '../wailsjs/go/main/App'
@@ -18,7 +18,12 @@ const message = useMessage()
 const showAbout = ref(false)
 const showConfigJson = ref(false)
 
-const menuOptions = [
+// ============ 工具切换（Claude Code / Codex，两套独立界面） ============
+const toolOptions = [
+  { label: 'Claude Code', value: 'claude' },
+  { label: 'Codex', value: 'codex' },
+]
+const claudeMenuOptions = [
   { label: '统计信息', key: 'stats' },
   { label: '基础配置', key: 'basic' },
   { label: '模型与权限', key: 'modelPermissions' },
@@ -26,6 +31,21 @@ const menuOptions = [
   { label: '外观与界面', key: 'appearance' },
   { label: '集成与工具', key: 'integration' },
 ]
+const codexMenuOptions = [
+  { label: '模型切换', key: 'codexModels' },
+]
+
+const activeTool = computed({
+  get: () => (store.cfg.uiux?.activeTool === 'codex' ? 'codex' : 'claude'),
+  set: (v: string) => { store.cfg.uiux.activeTool = v },
+})
+const menuOptions = computed(() => activeTool.value === 'codex' ? codexMenuOptions : claudeMenuOptions)
+const firstRouteOfTool = (tool: string) => (tool === 'codex' ? 'codexModels' : 'stats')
+
+async function onToolChange(tool: string) {
+  await store.save()
+  router.push({ name: firstRouteOfTool(tool) })
+}
 
 const activeKey = computed(() => route.name as string)
 const showConfigPath = computed(() => store.cfg.uiux?.showConfigPath ?? true)
@@ -76,13 +96,22 @@ onMounted(async () => {
   } catch (e: any) {
     message.error(`加载配置文件失败: ${e}`)
   }
+  // 路由优先：直接落在 Codex 页面（如刷新/深链）时强制工具为 Codex
+  if (route.name === 'codexModels') {
+    store.cfg.uiux.activeTool = 'codex'
+  }
 })
 </script>
 
 <template>
   <n-layout style="height: 100vh">
     <n-layout-header bordered style="padding: 0 16px; height: 56px; display: flex; align-items: center; gap: 24px">
-      <div style="font-weight: 700; font-size: 16px; white-space: nowrap">Claude Configuration Manager</div>
+      <n-select
+        v-model:value="activeTool"
+        :options="toolOptions"
+        style="width: 150px"
+        @update:value="onToolChange"
+      />
       <div style="flex: 1"></div>
       <n-space :size="8">
         <n-button size="small" @click="openConfigLocation">打开配置位置</n-button>

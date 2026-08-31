@@ -11,6 +11,8 @@ const router = createRouter({
     { path: '/features', name: 'features', component: () => import('../views/FeaturesView.vue'), meta: { title: '功能配置' } },
     { path: '/appearance', name: 'appearance', component: () => import('../views/AppearanceView.vue'), meta: { title: '外观与界面' } },
     { path: '/integration', name: 'integration', component: () => import('../views/IntegrationView.vue'), meta: { title: '集成与工具' } },
+    // Codex 工具
+    { path: '/codex/models', name: 'codexModels', component: () => import('../views/CodexView.vue'), meta: { title: '模型切换' } },
   ],
 })
 
