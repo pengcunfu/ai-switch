@@ -2,7 +2,7 @@
 import { computed, h, ref } from 'vue'
 import {
   NTabs, NTabPane, NCard, NForm, NFormItem, NSelect, NInputNumber,
-  NCheckbox, NButton, NSpace, NDataTable, NTag, useMessage, useDialog,
+  NCheckbox, NButton, NSpace, NDataTable, NTag, NText, useMessage, useDialog,
 } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import { useConfigStore } from '../stores/config'

@@ -59,6 +59,31 @@ export const useConfigStore = defineStore('config', {
       }
       if (!Array.isArray(this.cfg.hooks?.preHooks)) this.cfg.hooks.preHooks = []
       if (!Array.isArray(this.cfg.hooks?.postHooks)) this.cfg.hooks.postHooks = []
+      if (typeof this.cfg.uiux.notifications !== 'object' || this.cfg.uiux.notifications === null) {
+        this.cfg.uiux.notifications = {}
+      }
+      // integrations / developerTools 二级嵌套对象
+      if (typeof this.cfg.integrations.github !== 'object' || this.cfg.integrations.github === null) {
+        this.cfg.integrations.github = {}
+      }
+      if (typeof this.cfg.integrations.github.features !== 'object' || this.cfg.integrations.github.features === null) {
+        this.cfg.integrations.github.features = {}
+      }
+      if (typeof this.cfg.integrations.slack !== 'object' || this.cfg.integrations.slack === null) {
+        this.cfg.integrations.slack = {}
+      }
+      if (typeof this.cfg.integrations.slack.notifications !== 'object' || this.cfg.integrations.slack.notifications === null) {
+        this.cfg.integrations.slack.notifications = {}
+      }
+      if (!Array.isArray(this.cfg.integrations.customCommands)) {
+        this.cfg.integrations.customCommands = []
+      }
+      if (typeof this.cfg.developerTools.costTracking !== 'object' || this.cfg.developerTools.costTracking === null) {
+        this.cfg.developerTools.costTracking = {}
+      }
+      if (typeof this.cfg.developerTools.apiMonitoring !== 'object' || this.cfg.developerTools.apiMonitoring === null) {
+        this.cfg.developerTools.apiMonitoring = {}
+      }
     },
     /** 保存整个配置（Go 侧自动备份 .bak） */
     async save() {
